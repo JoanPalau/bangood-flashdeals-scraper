@@ -5,12 +5,14 @@ import argparse
 
 
 class ClientWeb(object):
-    """"Client web per descarregar les ofertes de Bang good"""
+    """Client web per descarregar les ofertes de Bang good"""
+    
     def __init__(self):
         super(ClientWeb, self).__init__()
         pass
 
     def run(self):
+        """Runs the functions in the correct order"""
         # agafar arguments
         link, path = self.parse_arguments()
 
@@ -27,6 +29,8 @@ class ClientWeb(object):
             pprint(results)
 
     def parse_arguments(self):
+        """Parses the arguments that the application accepts"""
+
         parser = argparse.ArgumentParser(description='Returns flash offers from Bang good web.')
         parser.add_argument('-l', '--link', dest='link', type=str, help='link to the web',
                             default='https://www.banggood.com/Flashdeals.html')
@@ -37,17 +41,23 @@ class ClientWeb(object):
         return args.link, args.file
 
     def store_result(self, path, result):
+        """Stores the result in the specified file with pprint format"""
+
         f = open(path, 'w')
         pprint(result, f)
         f.close()
 
     def descarregar_html(self, link):
+        """Gets the html of the page"""
+
         f = urlopen(link)
         html = f.read()
         f.close()
         return html
 
     def buscar_deals(self, html):
+        """Searches the multiple sets of offers and returns a list of lists"""
+
         result = []
         arbre = bs4.BeautifulSoup(html, features='lxml')
 
@@ -57,6 +67,8 @@ class ClientWeb(object):
         return result
 
     def get_li_data_product_info(self, tree, class_name):
+        """Searches for the information of one set of offers and returns a list of lists"""
+
         results = []
         unbeatable_deals_class = tree.find_all(class_=str(class_name))
         for deal_class in unbeatable_deals_class:
@@ -81,6 +93,8 @@ class ClientWeb(object):
         return results
 
     def price_span_content_search(self, parent, class_name):
+        """Searches for the content in a price span type and returns a string"""
+
         content = []
         spans = parent.find(class_=str(class_name))
         for span in spans:
