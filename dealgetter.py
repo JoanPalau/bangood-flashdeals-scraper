@@ -68,8 +68,7 @@ class ClientWeb(object):
         result = []
         arbre = bs4.BeautifulSoup(html, features='lxml')
 
-        result.append(self.get_li_data_product_info(arbre, 'unbeatabledealsitem newdealsgoods'))
-        result.append(self.get_li_data_product_info(arbre, 'brandweekdealsbox newdealsgoods'))
+        result.append(self.get_li_data_product_info(arbre, 'product-item'))
 
         return result
 
@@ -77,36 +76,15 @@ class ClientWeb(object):
         """Searches for the information of one set of offers and returns a list of lists"""
 
         results = []
-        unbeatable_deals_class = tree.find_all(class_=str(class_name))
-        for deal_class in unbeatable_deals_class:
-            unbeatable_deals = deal_class.find_all('li')
-            for deal in unbeatable_deals:
-                result = []
-
-                title = []
-                spans = deal.find(class_='title')
-                for span in spans:
-                    title = span.contents[0]
-                result.append(title)
-
-                price = self.price_span_content_search(deal, 'price')
-                result.append(price)
-
-                price_old = self.price_span_content_search(deal, 'price_old')
-                result.append(price_old)
-
-                results.append(result)
+        unbeatable_deals = tree.find_all(class_=class_name)
+        for deal in unbeatable_deals:
+            product = deal.find(class_="products_name").text.strip()
+            before_price = deal.find(class_="pre_price").text
+            after_price = deal.find(class_="price").text
+            discount = deal.find(class_="off").text
+            results.append((product, before_price, after_price, discount))
 
         return results
-
-    def price_span_content_search(self, parent, class_name):
-        """Searches for the content in a price span type and returns a string"""
-
-        content = []
-        spans = parent.find(class_=str(class_name))
-        for span in spans:
-            content = span
-        return content
 
 
 if __name__ == "__main__":
@@ -116,6 +94,5 @@ if __name__ == "__main__":
 
     gettext.install("dealgetter", localedir, "utf-8")
 
-    print(_("This Code is deprecated as the web recently changed :("))
     c = ClientWeb()
     c.run()
