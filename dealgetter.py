@@ -3,13 +3,16 @@ from pprint import pprint
 import bs4
 import argparse
 
+import gettext
+import os
+import sys
 
 class ClientWeb(object):
     """Client web per descarregar les ofertes de Bang good"""
     
     def __init__(self):
+        print(_("Initializing Web Client"))
         super(ClientWeb, self).__init__()
-        pass
 
     def run(self):
         """Runs the functions in the correct order"""
@@ -26,6 +29,7 @@ class ClientWeb(object):
         if path:
             self.store_result(path, results)
         else:
+            print(_("Results:"))
             pprint(results)
 
     def parse_arguments(self):
@@ -43,6 +47,7 @@ class ClientWeb(object):
     def store_result(self, path, result):
         """Stores the result in the specified file with pprint format"""
 
+        print(_("Storing results..."))
         f = open(path, 'w')
         pprint(result, f)
         f.close()
@@ -50,6 +55,7 @@ class ClientWeb(object):
     def descarregar_html(self, link):
         """Gets the html of the page"""
 
+        print(_("Downloading web HTML..."))
         f = urlopen(link)
         html = f.read()
         f.close()
@@ -58,6 +64,7 @@ class ClientWeb(object):
     def buscar_deals(self, html):
         """Searches the multiple sets of offers and returns a list of lists"""
 
+        print(_("Searching for the best deals..."))
         result = []
         arbre = bs4.BeautifulSoup(html, features='lxml')
 
@@ -103,5 +110,12 @@ class ClientWeb(object):
 
 
 if __name__ == "__main__":
+    appdir = os.path.dirname(sys.argv[0])
+    appdir = os.path.abspath(appdir)
+    localedir = os.path.join(appdir, "locales")
+
+    gettext.install("dealgetter", localedir, "utf-8")
+
+    print(_("This Code is deprecated as the web recently changed :("))
     c = ClientWeb()
     c.run()
